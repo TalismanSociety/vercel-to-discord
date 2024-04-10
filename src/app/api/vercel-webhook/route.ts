@@ -29,6 +29,7 @@ export const POST = async (req: Request, res: Response) => {
             case 'deployment.succeeded':
             case 'deployment.canceled':
             case 'deployment.error':
+            case 'deployment.created':
                 await sendDiscordMessageFor(vercelEvent);
                 break;
             default: ''
@@ -43,6 +44,20 @@ export const POST = async (req: Request, res: Response) => {
 
 function sha1(data: Buffer, secret: string): string {
     return crypto.createHmac('sha1', secret).update(data).digest('hex');
+}
+
+function stateToColor(state: string): number  {
+    switch (state) {
+        case 'SUCCEEDED':
+            // green
+            return 3066993;
+        case 'CREATED':
+            // gold/yellow
+            return 15188540;
+        default:
+            // red
+            return 15158332;
+    }
 }
 
 async function sendDiscordMessageFor(vercelEvent: VercelWebhookEvent) {
@@ -64,7 +79,7 @@ async function sendDiscordMessageFor(vercelEvent: VercelWebhookEvent) {
             title: `Deployment of ${name} in ${gitBranch.toUpperCase()}: ${state}.`,
             url: deploymentDashboardUrl,
             description: `The deployment for ${name} is now ${state}.`,
-            color: state === 'SUCCEEDED' ? 3066993 : 15158332, // Green for success, red for failure
+            color: stateToColor(state), // Green for success, red for failure
             fields: [
                 {
                     name: 'Project',

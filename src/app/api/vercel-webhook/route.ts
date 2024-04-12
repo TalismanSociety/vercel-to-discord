@@ -85,7 +85,7 @@ async function sendDiscordMessageFor(vercelEvent: VercelWebhookEvent) {
             fields: [
                 {
                     name: 'Preview Link',
-                    value: `(${deploymentLink})[${deploymentLink}]`,
+                    value: `[${deploymentLink}](${deploymentLink})`,
                 }
             ],
         }],

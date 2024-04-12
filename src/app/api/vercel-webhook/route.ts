@@ -65,6 +65,7 @@ async function sendDiscordMessageFor(vercelEvent: VercelWebhookEvent) {
     const name = vercelEvent.payload.deployment.name;
     const state = vercelEvent.type.split('.')[1].toUpperCase();
     const deploymentDashboardUrl = vercelEvent.payload.links.deployment;
+    const deploymentLink = vercelEvent.payload.deployment.url;
     const projectUrl = vercelEvent.payload.links.project;
     const gitBranch = vercelEvent.payload.deployment.meta["githubCommitRef"];
     const githubOrg = vercelEvent.payload.deployment.meta["githubCommitOrg"];
@@ -76,27 +77,16 @@ async function sendDiscordMessageFor(vercelEvent: VercelWebhookEvent) {
     const discordMessage = {
         content: null,
         embeds: [{
-            title: `Deployment of ${name} in ${gitBranch.toUpperCase()}: ${state}.`,
-            url: deploymentDashboardUrl,
-            description: `The deployment for ${name} is now ${state}.`,
+            title: `Deployment of ${name} ${state}.`,
+            description: `${githubCommitMessage}`,
+            url: githubCommitUrl,
+            // description: `The deployment for ${name} is now ${state}.`,
             color: stateToColor(state), // Green for success, red for failure
             fields: [
                 {
-                    name: 'Project',
-                    value: `[${name}](${projectUrl})`,
-                },
-                {
-                    name: 'Branch',
-                    value: gitBranch,
-                },
-                {
-                    name: 'Commit',
-                    value: `[${githubCommitSha}](${githubCommitUrl})`,
-                },
-                {
-                    name: 'Commit Message',
-                    value: githubCommitMessage,
-                },
+                    name: 'Preview Link',
+                    value: `(${deploymentLink})[${deploymentLink}]`,
+                }
             ],
         }],
     };
